@@ -7,6 +7,7 @@ import createStoreWithRouter, {
 import provideRouter, { RouterProvider } from './provider';
 import { Link, PersistentQueryLink } from './link';
 import Fragment from './fragment';
+import ComponentFragment from './component-fragment';
 
 import routerReducer from './reducer';
 import createMatcher from './create-matcher';
@@ -36,6 +37,7 @@ export {
   Link,
   PersistentQueryLink,
   Fragment,
+  ComponentFragment,
 
   // Public action types
   LOCATION_CHANGED,
