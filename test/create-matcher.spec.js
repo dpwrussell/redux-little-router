@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { createMatcher } from '../src';
 
 import routes from './fixtures/routes';
+
 describe('createMatcher', () => {
   it('matches URLs and returns both their params and their value in the route hash', () => {
     const matchRoute = createMatcher(routes);

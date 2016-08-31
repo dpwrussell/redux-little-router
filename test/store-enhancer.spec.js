@@ -119,16 +119,7 @@ describe('Router store enhancer', () => {
         query: { yo: 'yo' },
         route: '/home',
         params: {},
-        result: [
-          {
-            name: 'root',
-            routeComponent: '/'
-          },
-          {
-            name: 'home',
-            routeComponent: 'home'
-          }
-        ]
+        result: { name: 'home' }
       });
   });
 
@@ -149,16 +140,7 @@ describe('Router store enhancer', () => {
         query: { yo: 'yo' },
         route: '/home',
         params: {},
-        result: [
-          {
-            name: 'root',
-            routeComponent: '/'
-          },
-          {
-            name: 'home',
-            routeComponent: 'home'
-          }
-        ]
+        result: { name: 'home' }
       });
   });
 

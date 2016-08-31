@@ -4,17 +4,18 @@ import { mount} from 'enzyme';
 
 import React from 'react';
 
-import Fragment from '../src/fragment';
+import ComponentFragment from '../src/component-fragment';
 
-import { fakeContext } from './util';
+import { fakeContextWithComponentRouting } from './util';
 
-describe('Fragment', () => {
+describe('ComponentFragment', () => {
+
   it('renders if the current URL matches the given route', () => {
     const wrapper = mount(
-      <Fragment forRoute='/home/messages/:team'>
+      <ComponentFragment forRoute='/home/messages/:team'>
         <p>Hey, wait, I'm having one of those things...you know, a headache with pictures.</p>
-      </Fragment>,
-      fakeContext({
+      </ComponentFragment>,
+      fakeContextWithComponentRouting({
         pathname: '/home/messages/a-team'
       })
     );
@@ -25,10 +26,10 @@ describe('Fragment', () => {
 
   it('renders nothing if the current URL does not match the given route', () => {
     const wrapper = mount(
-      <Fragment forRoute='/home/messages/:team'>
+      <ComponentFragment forRoute='/home/messages/:team'>
         <p>Nothing to see here!</p>
-      </Fragment>,
-      fakeContext({
+      </ComponentFragment>,
+      fakeContextWithComponentRouting({
         pathname: '/home'
       })
     );
@@ -52,10 +53,10 @@ describe('Fragment', () => {
 
     multiPathnames.forEach(pathname => {
       const wrapper = mount(
-        <Fragment forRoutes={multiRoutes}>
+        <ComponentFragment forRoutes={multiRoutes}>
           <p>If we hit that bullseye, the rest of the dominos will fall like a house of cards. Checkmate.</p>
-        </Fragment>,
-        fakeContext({ pathname })
+        </ComponentFragment>,
+        fakeContextWithComponentRouting({ pathname })
       );
       expect(wrapper.find('p').node.textContent).to.equal(
         'If we hit that bullseye, the rest of the dominos will fall like a house of cards. Checkmate.'
@@ -65,10 +66,10 @@ describe('Fragment', () => {
 
   it('renders nothing if the current URL matches none of a given list of routes', () => {
     const wrapper = mount(
-      <Fragment forRoutes={multiRoutes}>
+      <ComponentFragment forRoutes={multiRoutes}>
         <p>Nothing to see here!</p>
-      </Fragment>,
-      fakeContext({
+      </ComponentFragment>,
+      fakeContextWithComponentRouting({
         pathname: '/home/fhqwhgads'
       })
     );
@@ -77,12 +78,12 @@ describe('Fragment', () => {
 
   it('renders if the current location matches a predicate function', () => {
     const wrapper = mount(
-      <Fragment withConditions={
+      <ComponentFragment withConditions={
         location => location.query.ayy === 'lmao'
       }>
         <p>In the game of chess, you can never let your adversary see your pieces.</p>
-      </Fragment>,
-      fakeContext({
+      </ComponentFragment>,
+      fakeContextWithComponentRouting({
         query: {
           ayy: 'lmao'
         }
@@ -95,12 +96,12 @@ describe('Fragment', () => {
 
   it('renders if the current location matches a predicate function', () => {
     const wrapper = mount(
-      <Fragment withConditions={
+      <ComponentFragment withConditions={
         location => location.query.ayy === 'lmao'
       }>
         <p>In the game of chess, you can never let your adversary see your pieces.</p>
-      </Fragment>,
-      fakeContext({
+      </ComponentFragment>,
+      fakeContextWithComponentRouting({
         query: {
           ayy: 'yyy'
         }
@@ -108,4 +109,45 @@ describe('Fragment', () => {
     );
     expect(wrapper.find('p')).to.have.lengthOf(0);
   });
+
+  it('renders if the current URL matches a given route component', () => {
+    const wrapper = mount(
+      <ComponentFragment hasComponent='team'>
+        <p>As you know, the key to victory is the element of surprise. Surprise!</p>
+      </ComponentFragment>,
+      fakeContextWithComponentRouting({
+        pathname: '/home/messages/a-team'
+      })
+    );
+    expect(wrapper.find('p').node.textContent).to.equal(
+      'As you know, the key to victory is the element of surprise. Surprise!'
+    );
+  });
+
+  it('renders nothing if the current URL does not match a given route component', () => {
+    const wrapper = mount(
+      <ComponentFragment hasComponent='messages'>
+        <p>Nothing to see here!</p>
+      </ComponentFragment>,
+      fakeContextWithComponentRouting({
+        pathname: '/home'
+      })
+    );
+    expect(wrapper.find('p')).to.have.lengthOf(0);
+  });
+
+  it('renders if the current URL matches a given parent route component', () => {
+    const wrapper = mount(
+      <ComponentFragment hasComponent='home'>
+        <p>You win again, gravity!</p>
+      </ComponentFragment>,
+      fakeContextWithComponentRouting({
+        pathname: '/home/messages/a-team'
+      })
+    );
+    expect(wrapper.find('p').node.textContent).to.equal(
+      'You win again, gravity!'
+    );
+  });
+
 });

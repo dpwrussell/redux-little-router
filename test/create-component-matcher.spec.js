@@ -1,10 +1,11 @@
 import { expect } from 'chai';
 import { createComponentMatcher } from '../src';
 
-import routes from './fixtures/routes';
-describe('createMatcher', () => {
+import componentRoutes from './fixtures/component-routes';
+
+describe('createComponentMatcher', () => {
   it('matches URLs and returns the route matched, their params and their value in the route hash', () => {
-    const matchRoute = createComponentMatcher(routes);
+    const matchRoute = createComponentMatcher(componentRoutes);
 
     expect(matchRoute('/home')).to.deep.equal({
       route: '/home',
