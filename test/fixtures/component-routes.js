@@ -1,4 +1,4 @@
-import {makeRoute } from '../../src';
+import { makeComponentRoute as makeCR } from '../../src';
 
 const root = { routeComponent: '/', name: 'root' };
 const home = { routeComponent: 'home', name: 'home' };
@@ -10,19 +10,19 @@ const global = { routeComponent: 'global', name: 'global' };
 const absolute = { routeComponent: 'a/b/c/:d', name: 'absolute' };
 
 const routes =
-makeRoute(root,
-  makeRoute(home,
-    makeRoute(messages,
-      makeRoute(team,
-        makeRoute(channel)
+makeCR(root,
+  makeCR(home,
+    makeCR(messages,
+      makeCR(team,
+        makeCR(channel)
       )
     ),
-    makeRoute(global,
-      makeRoute(channel)
+    makeCR(global,
+      makeCR(channel)
     ),
-    makeRoute(spookyparam)
+    makeCR(spookyparam)
   ),
-  makeRoute(absolute)
+  makeCR(absolute)
 );
 
 export default routes;

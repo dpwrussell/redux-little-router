@@ -22,7 +22,7 @@ import {
 } from './action-types';
 
 import {
-  makeRoute
+  makeComponentRoute
 } from './util';
 
 export {
@@ -52,5 +52,5 @@ export {
   createComponentMatcher,
 
   // Route utilities
-  makeRoute
+  makeComponentRoute
 };
