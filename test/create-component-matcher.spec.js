@@ -4,7 +4,7 @@ import { createComponentMatcher } from '../src';
 import componentRoutes from './fixtures/component-routes';
 
 describe('createComponentMatcher', () => {
-  it('matches URLs and returns the route matched, their params and their value in the route hash', () => {
+  it('matches URLs and returns the route matched, their params and value in the route hash', () => {
     const matchRoute = createComponentMatcher(componentRoutes);
 
     expect(matchRoute('/home')).to.deep.equal({

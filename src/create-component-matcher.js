@@ -9,7 +9,7 @@ export default (routes: Object) => {
     // Discard query strings
     const route = incomingUrl.split('?')[0]; // eslint-disable-line no-magic-numbers
 
-    const traverseRoutes = (toMatch, routeComponent, parentPath='') => {
+    const traverseRoutes = (toMatch, routeComponent, parentPath = '') => {
 
       if (routeComponent.routeComponent) {
         const path = pathJoin(parentPath, routeComponent.routeComponent);
@@ -28,11 +28,12 @@ export default (routes: Object) => {
           for (const child of children) {
             const result = traverseRoutes(toMatch, child, path);
             if (result) {
-              return [routeComponent].concat(result)
+              return [routeComponent].concat(result);
             }
           }
         }
       }
+      return undefined;
     };
 
     // Returns an array where the final index contains an object containing
@@ -44,7 +45,8 @@ export default (routes: Object) => {
       return null;
     }
 
-    const finalRouteComponent = matchedRoute[matchedRoute.length-1];
+    // eslint-disable-next-line no-magic-numbers
+    const finalRouteComponent = matchedRoute[matchedRoute.length - 1];
 
     // Return:
     // {
@@ -55,10 +57,11 @@ export default (routes: Object) => {
 
     return {
       route: finalRouteComponent.route,
-      result: (matchedRoute.slice(0,-1).concat(finalRouteComponent.routeComponent)).map(r => {
+      // eslint-disable-next-line no-magic-numbers
+      result: (matchedRoute.slice(0, -1).concat(finalRouteComponent.routeComponent)).map(r => {
         const childlessR = Object.assign({}, r);
         delete childlessR.children;
-        return childlessR
+        return childlessR;
       }),
       params: finalRouteComponent.params
     };
