@@ -10,6 +10,7 @@ import Fragment from './fragment';
 
 import routerReducer from './reducer';
 import createMatcher from './create-matcher';
+import createComponentMatcher from './create-component-matcher';
 
 import {
   LOCATION_CHANGED,
@@ -48,6 +49,7 @@ export {
   routerReducer,
   locationDidChange,
   createMatcher,
+  createComponentMatcher,
 
   // Route utilities
   makeRoute
