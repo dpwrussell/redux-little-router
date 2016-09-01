@@ -1,11 +1,8 @@
-// @flow
-import type { Action } from 'redux';
-import type { Location } from 'history';
 import { LOCATION_CHANGED } from './action-types';
 
-export default (state: ?Location | Object = {}, action: Action) => {
+export default (state, action) => {
   if (action.type === LOCATION_CHANGED) {
-    // No-op the initial route action
+    // No-op the initial route action 
     if (state && state.pathname === action.payload.pathname) {
       return state;
     }

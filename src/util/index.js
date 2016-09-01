@@ -1,4 +1,3 @@
-// @flow
-export const makeComponentRoute = (details: Object, ...children: Array<Object>) => {
+export const makeComponentRoute = (details, ...children) => {
   return Object.assign({}, details, children ? { children } : {});
 };
