@@ -2,10 +2,12 @@ import { LOCATION_CHANGED } from './action-types';
 
 export default (state, action) => {
   if (action.type === LOCATION_CHANGED) {
-    // No-op the initial route action 
-    if (state && state.pathname === action.payload.pathname) {
-      return state;
-    }
+
+    // TODO Determine a need for this
+    // No-op the initial route action
+    // if (state && state.pathname === action.payload.pathname) {
+    //   return state;
+    // }
 
     return {
       ...action.payload,

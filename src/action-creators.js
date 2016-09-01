@@ -16,8 +16,3 @@ export const locationDidChange = ({
     }
   };
 };
-
-export const initializeCurrentLocation = (location) => ({
-  type: LOCATION_CHANGED,
-  payload: location
-});

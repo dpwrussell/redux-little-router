@@ -4,28 +4,12 @@ import provideRouter, { RouterProvider } from './provider';
 import { Link, PersistentQueryLink } from './link';
 import Fragment from './fragment';
 import ComponentFragment from './component-fragment';
-
 import routerReducer from './reducer';
 import createMatcher from './create-matcher';
 import createComponentMatcher from './create-component-matcher';
-
-import {
-  LOCATION_CHANGED,
-  PUSH,
-  REPLACE,
-  GO,
-  GO_FORWARD,
-  GO_BACK
-} from './action-types';
-
-import {
-  locationDidChange,
-  initializeCurrentLocation
-} from './action-creators';
-
-import {
-  makeComponentRoute
-} from './util';
+import { LOCATION_CHANGED, PUSH, REPLACE, GO, GO_FORWARD, GO_BACK } from './action-types';
+import { locationDidChange } from './action-creators';
+import { makeRouter, makeComponentRoute, makeHistory } from './util';
 
 export {
   // High-level Redux API
@@ -34,7 +18,6 @@ export {
 
   // Action Creators
   locationDidChange,
-  initializeCurrentLocation,
 
   // React API
   provideRouter,
@@ -54,10 +37,11 @@ export {
 
   // Low-level Redux utilities
   routerReducer,
-
   createMatcher,
   createComponentMatcher,
 
-  // Route utilities
-  makeComponentRoute
+  // Utilities
+  makeRouter,
+  makeComponentRoute,
+  makeHistory
 };

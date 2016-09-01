@@ -29,4 +29,3 @@ env:
 ecmaFeatures:
   module: true
   modules: true
-

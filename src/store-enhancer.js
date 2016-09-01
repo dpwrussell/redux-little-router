@@ -1,6 +1,6 @@
 import routerReducer from './reducer';
 
-const storeEnhancerFactory = matchRoute => createStore => (reducer, preloadedState, enhancer) {
+const storeEnhancerFactory = (history, matchRoute) => createStore => (reducer, preloadedState, enhancer) => {
 
   // Enhance the reducer
   const enhancedReducer = (state, action) => {
@@ -19,7 +19,7 @@ const storeEnhancerFactory = matchRoute => createStore => (reducer, preloadedSta
     enhancer
   );
 
-  return { ...store, matchRoute };
+  return { ...store, history, matchRoute };
 };
 
 export default storeEnhancerFactory;
