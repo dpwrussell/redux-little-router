@@ -1,9 +1,5 @@
-// @flow
-import createStoreWithRouter, {
-  locationDidChange,
-  initializeCurrentLocation
-} from './store-enhancer';
-
+import storeEnhancerFactory from './store-enhancer';
+import storeMiddlewareFactory from './store-middleware';
 import provideRouter, { RouterProvider } from './provider';
 import { Link, PersistentQueryLink } from './link';
 import Fragment from './fragment';
@@ -23,12 +19,21 @@ import {
 } from './action-types';
 
 import {
+  locationDidChange,
+  initializeCurrentLocation
+} from './action-creators';
+
+import {
   makeComponentRoute
 } from './util';
 
 export {
   // High-level Redux API
-  createStoreWithRouter,
+  storeEnhancerFactory,
+  storeMiddlewareFactory,
+
+  // Action Creators
+  locationDidChange,
   initializeCurrentLocation,
 
   // React API
@@ -49,7 +54,7 @@ export {
 
   // Low-level Redux utilities
   routerReducer,
-  locationDidChange,
+
   createMatcher,
   createComponentMatcher,
 
