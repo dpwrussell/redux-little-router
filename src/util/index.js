@@ -5,7 +5,7 @@ import useQueries from 'history/lib/useQueries';
 import storeEnhancerFactory from '../store-enhancer';
 import storeMiddlewareFactory from '../store-middleware';
 import createComponentMatcher from '../create-component-matcher';
-import { locationDidChange, initializeCurrentLocation } from '../action-creators';
+import { locationDidChange, locationInit } from '../action-creators';
 
 export const makeRouter = ({
   routes,
@@ -29,7 +29,7 @@ export const makeRouter = ({
   const historyInit = (store) => {
 
     // Initialize
-    store.dispatch(locationDidChange({
+    store.dispatch(locationInit({
       location: history.getCurrentLocation(),
       matchRoute
     }));

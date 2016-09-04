@@ -8,7 +8,7 @@ import routerReducer from './reducer';
 import createMatcher from './create-matcher';
 import createComponentMatcher from './create-component-matcher';
 import { LOCATION_CHANGED, PUSH, REPLACE, GO, GO_FORWARD, GO_BACK } from './action-types';
-import { locationDidChange } from './action-creators';
+import { locationDidChange, locationInit } from './action-creators';
 import { makeRouter, makeComponentRoute, makeHistory } from './util';
 
 export {
@@ -18,6 +18,7 @@ export {
 
   // Action Creators
   locationDidChange,
+  locationInit,
 
   // React API
   provideRouter,

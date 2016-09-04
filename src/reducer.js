@@ -1,7 +1,7 @@
-import { LOCATION_CHANGED } from './action-types';
+import { LOCATION_CHANGED, LOCATION_INIT } from './action-types';
 
 export default (state, action) => {
-  if (action.type === LOCATION_CHANGED) {
+  if (action.type === LOCATION_CHANGED || action.type === LOCATION_INIT) {
 
     // TODO Determine a need for this
     // No-op the initial route action
