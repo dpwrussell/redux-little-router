@@ -1,16 +1,16 @@
 // @flow
 import UrlPattern from 'url-pattern';
 import { join as pathJoin } from 'path';
+import memoize from 'lru-memoize';
 
 export default (routes: Object) => {
 
-  return (incomingUrl: string) => {
+  const fn = (incomingUrl: string) => {
 
     // Discard query strings
     const route = incomingUrl.split('?')[0]; // eslint-disable-line no-magic-numbers
 
     const traverseRoutes = (toMatch, routeComponent, parentPath = '') => {
-
       if (routeComponent.routeComponent) {
         const path = pathJoin(parentPath, routeComponent.routeComponent);
         const pattern = new UrlPattern(path);
@@ -67,4 +67,7 @@ export default (routes: Object) => {
     };
 
   };
+
+  return memoize()(fn);
+
 };

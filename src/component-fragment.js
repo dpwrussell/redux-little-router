@@ -23,32 +23,38 @@ const ComponentFragment = (
   const { matchRoute } = store;
   const { router: location } = store.getState();
 
-  if (
-    forRoute &&
-    matchRoute(location.pathname).route !== forRoute
-  ) {
-    return null;
-  }
+  const match = matchRoute(location.pathname);
 
-  if (forRoutes) {
-    const anyMatch = forRoutes.some(route =>
-      matchRoute(location.pathname).route === route
-    );
-
-    if (!anyMatch) {
+  if (match) {
+    if (
+      forRoute &&
+      match.route !== forRoute
+    ) {
       return null;
     }
-  }
 
-  if (
-    hasComponent &&
-    matchRoute(location.pathname).result.every(r => r.name !== hasComponent)
-  ) {
-    return null;
-  }
+    if (forRoutes) {
+      const anyMatch = forRoutes.some(route =>
+        match.route === route
+      );
 
-  if (withConditions && !withConditions(location)) {
-    return null;
+      if (!anyMatch) {
+        return null;
+      }
+    }
+
+    if (
+      hasComponent &&
+      match.result.every(r => r.name !== hasComponent)
+    ) {
+      return null;
+    }
+
+    if (withConditions && !withConditions(location)) {
+      return null;
+    }
+  } else {
+    console.log('No match for', location.pathname);
   }
 
   return <div>{children}</div>;
