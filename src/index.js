@@ -4,10 +4,11 @@ import provideRouter, { RouterProvider } from './provider';
 import { Link, PersistentQueryLink } from './link';
 import Fragment from './fragment';
 import ComponentFragment from './component-fragment';
+import PlaceholderFragment from './PlaceholderFragment';
 import routerReducer from './reducer';
 import createMatcher from './create-matcher';
 import createComponentMatcher from './create-component-matcher';
-import { LOCATION_CHANGED, PUSH, REPLACE, GO, GO_FORWARD, GO_BACK } from './action-types';
+import { LOCATION_CHANGED, LOCATION_INIT, PUSH, REPLACE, GO, GO_FORWARD, GO_BACK } from './action-types';
 import { locationDidChange, locationInit } from './action-creators';
 import { makeRouter, makeComponentRoute, makeHistory } from './util';
 
@@ -27,9 +28,11 @@ export {
   PersistentQueryLink,
   Fragment,
   ComponentFragment,
+  PlaceholderFragment,
 
   // Public action types
   LOCATION_CHANGED,
+  LOCATION_INIT,
   PUSH,
   REPLACE,
   GO,
