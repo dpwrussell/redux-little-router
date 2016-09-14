@@ -1,7 +1,7 @@
 {
-  "name": "redux-little-router",
-  "version": "7.3.1",
-  "description": "A barebones routing solution for Redux applications.",
+  "name": "redux-routing-toolkit",
+  "version": "0.0.1",
+  "description": "A toolkit for routing in Redux applications.",
   "main": "lib/index.js",
   "scripts": {
     "preversion": "npm run check",
@@ -24,19 +24,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://tptee@github.com/FormidableLabs/redux-little-router.git"
+    "url": "git+https://dpwrussell@github.com/dpwrussell/redux-routing-toolkit.git"
   },
   "keywords": [
     "redux",
     "router",
-    "middleware"
+    "middleware",
+    "react"
   ],
-  "author": "Tyler Thompson",
+  "author": "Douglas Russell",
+  "contributors": [ "Tyler Thompson" ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/FormidableLabs/redux-little-router/issues"
+    "url": "https://github.com/dpwrussell/redux-routing-toolkit/issues"
   },
-  "homepage": "https://github.com/FormidableLabs/redux-little-router#readme",
+  "homepage": "https://github.com/dpwrussell/redux-routing-toolkit#readme",
   "dependencies": {
     "history": "^3.0.0",
     "url-pattern": "^1.0.1"
@@ -58,13 +60,8 @@
     "enzyme": "^2.4.1",
     "eslint": "^3.4.0",
     "eslint-config-defaults": "^10.0.0-alpha.1",
-    "eslint-config-walmart": "^1.0.1",
     "eslint-plugin-babel": "^3.3.0",
-    "eslint-plugin-filenames": "0.2.0",
-    "eslint-plugin-flowtype": "^2.6.3",
     "eslint-plugin-react": "^5.2.2",
-    "flow-bin": "^0.30.0",
-    "flow-typed": "^2.0.0-beta.6",
     "jsdom": "^9.4.1",
     "lodash": "^4.13.1",
     "lru-memoize": "^1.0.1",

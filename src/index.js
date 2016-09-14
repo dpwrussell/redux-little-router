@@ -2,15 +2,15 @@ import storeEnhancerFactory from './store-enhancer';
 import storeMiddlewareFactory from './store-middleware';
 import provideRouter, { RouterProvider } from './provider';
 import { Link, PersistentQueryLink } from './link';
-import Fragment from './fragment';
-import ComponentFragment from './component-fragment';
-import PlaceholderFragment from './PlaceholderFragment';
+import ComponentFragment from './react/ComponentFragment';
+import PlaceholderFragment from './react/PlaceholderFragment';
 import routerReducer from './reducer';
-import createMatcher from './create-matcher';
 import createComponentMatcher from './create-component-matcher';
 import { LOCATION_CHANGED, LOCATION_INIT, PUSH, REPLACE, GO, GO_FORWARD, GO_BACK } from './action-types';
 import { locationDidChange, locationInit } from './action-creators';
-import { makeRouter, makeComponentRoute, makeHistory } from './util';
+import { makeRouter, assembleComponentRoute, assembleComponentRouteWithMeta, makeHistory } from './util';
+import codeSplitMiddleware from './code-split/middleware';
+import codeSplitUtils from './code-split/util';
 
 export {
   // High-level Redux API
@@ -26,7 +26,6 @@ export {
   RouterProvider,
   Link,
   PersistentQueryLink,
-  Fragment,
   ComponentFragment,
   PlaceholderFragment,
 
@@ -41,11 +40,15 @@ export {
 
   // Low-level Redux utilities
   routerReducer,
-  createMatcher,
   createComponentMatcher,
 
   // Utilities
   makeRouter,
-  makeComponentRoute,
-  makeHistory
+  assembleComponentRoute,
+  assembleComponentRouteWithMeta,
+  makeHistory,
+
+  // Middleware
+  codeSplitMiddleware,
+  codeSplitUtils
 };

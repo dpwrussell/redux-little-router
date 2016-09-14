@@ -54,8 +54,21 @@ export const makeRouter = ({
   };
 };
 
-export const makeComponentRoute = (details, ...children) => {
-  return Object.assign({}, details, children ? { children } : {});
+// export const makeComponentRoute = (details, ...children) => {
+//   return Object.assign({}, details, children ? { children } : {});
+// };
+
+export const assembleComponentRoute = (componentRoute, ...children) => {
+  return Object.assign({}, componentRoute, children ? { children } : {});
+};
+
+export const assembleComponentRouteWithMeta = (componentRoute, meta, ...children) => {
+  return Object.assign(
+    {},
+    componentRoute,
+    meta ? meta : {},
+    children ? { children } : {}
+  );
 };
 
 export const makeHistory = (basename) => {

@@ -1,19 +1,9 @@
-// @flow
-import type { Store } from 'redux';
+import React, { PropTypes } from 'react';
 
-import React, { Component, PropTypes } from 'react';
 
-export type RouterContext = { store: Store };
+export class RouterProvider extends React.Component {
 
-type Props = {
-  store: Object,
-  children: ReactPropTypes.node
-};
-
-export class RouterProvider extends Component {
-  router: { store: Store };
-
-  constructor(props: Props) {
+  constructor(props) {
     super(props);
     this.router = {
       store: props.store
@@ -35,12 +25,11 @@ RouterProvider.childContextTypes = {
   router: PropTypes.object
 };
 
-type ProvideRouterArgs = {
-  store: Object
-};
-
-export default ({ store }: ProvideRouterArgs) =>
-  (ComposedComponent: ReactClass<*>) => (props: Object) =>
+export default ({ store }) => ComposedComponent => {
+  const provideRouter = props => (
     <RouterProvider store={store}>
       <ComposedComponent {...props} />
-    </RouterProvider>;
+    </RouterProvider>
+  );
+  return provideRouter;
+};

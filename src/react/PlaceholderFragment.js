@@ -1,23 +1,6 @@
-// @flow
-import type { Location } from 'history';
-import type { RouterContext } from './provider';
-
 import React, { PropTypes } from 'react';
 
-type Props = {
-  forRoute: string,
-  forRoutes: [string],
-  hasComponent: string,
-  withConditions: (location: Location) => bool,
-  children: ReactPropTypes.node
-};
-
-const ComponentFragment = (
-  props: Props,
-  context: {
-    router: RouterContext
-  }
-) => {
+const ComponentFragment = (props, context) => {
   const { forRoute, forRoutes, hasComponent, withConditions, children } = props;
   const { store } = context.router;
   const { matchRoute } = store;
@@ -27,8 +10,8 @@ const ComponentFragment = (
 
   if (match) {
     if (
-      forRoute &&
-      match.route !== forRoute
+      forRoute
+      && match.route !== forRoute
     ) {
       return null;
     }
@@ -44,13 +27,16 @@ const ComponentFragment = (
     }
 
     if (
-      hasComponent &&
-      match.result.every(r => r.name !== hasComponent)
+      hasComponent
+      && match.routeComponents.every(r => r.name !== hasComponent)
     ) {
       return null;
     }
 
-    if (withConditions && !withConditions(location)) {
+    if (
+      withConditions
+      && !withConditions(location)
+    ) {
       return null;
     }
   } else {
@@ -58,18 +44,21 @@ const ComponentFragment = (
   }
 
   // Find the component which matched (for component matches this is the
-  // relevant component. For other types, the last result is used.)
+  // relevant component. For other types, the last routeComponent is used.)
   if (
-    match.result.length > 0
+    match.routeComponents.length > 0
   ) {
     const matchingComponent = hasComponent
-                            ? match.result.find(r => r.name === hasComponent)
-                            : match.result[match.result.length-1];
+                            ? match.routeComponents.find(r => r.name === hasComponent)
+                            : match.routeComponents[match.routeComponents.length-1];
 
     if (matchingComponent.hasOwnProperty('component')) {
+      const componentProps = matchingComponent.hasOwnProperty('componentProps')
+                           ? matchingComponent.componentProps
+                           : {};
       return React.createElement(
         matchingComponent.component,
-        {},
+        componentProps,
         children
       );
     }

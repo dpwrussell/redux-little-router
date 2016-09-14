@@ -1,31 +1,64 @@
----
-extends:
-  - "defaults/configurations/walmart/es6-react"
+{
+    "env": {
+        "browser": true,
+        "node": true,
+        "es6": true
+    },
 
-parser: "babel-eslint"
+    "plugins": [
+        "react"
+    ],
 
-plugins:
-  - "filenames"
-  - "babel"
-  - "flowtype"
+    "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended"
+    ],
 
-rules:
-  filenames/filenames: [2, "^[a-z\\-\\.]+$"] # dash-cased filenames.
-  quotes:              [2, "single"]
-  spaced-comment: [2, "always"]
-  indent: [2, 2, {"SwitchCase": 1}]
-  jsx-quotes: [2, "prefer-single"]
-  arrow-parens: 0
-  no-fallthrough: 2
-  no-arrow-condition: 0
-  no-confusing-arrow: [2, {"allowParens": false}]
-  flowtype/define-flow-type: warn
+    "parserOptions": {
+        "ecmaFeatures": {
+            "experimentalObjectRestSpread": true,
+            "jsx": true
+        },
+        "sourceType": "module"
+    },
+    "globals": {
+      "describe": true,
+      "it": true
+    },
 
-env:
-  es6: true
-  mocha: true
+    "rules": {
+        "indent": [
+            "error",
+            2,
+            { "SwitchCase": 1 }
+        ],
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "camelcase": 2,
+        "no-unused-vars": 2,
+        "no-undef": 2
 
-// 2 declaration needed because of this bug https://github.com/eslint/eslint/issues/1963
-ecmaFeatures:
-  module: true
-  modules: true
+    }
+}
+
+# ---
+
+# parser: "babel-eslint"
+#
+# plugins:
+#   - "babel"
+#
+# // 2 declaration needed because of this bug https://github.com/eslint/eslint/issues/1963
+# ecmaFeatures:
+#   module: true
+#   modules: true

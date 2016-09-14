@@ -1,12 +1,12 @@
 // const UrlPattern = require('url-pattern');
 // const pathJoin = require('path').join;
 //
-// const root = { routeComponent: '/', name:'root' };
-// const home = { routeComponent:'home', name:'home' };
-// const messages = { routeComponent:'messages', name:'messages' };
-// const team = { routeComponent:':team', name:'team' };
-// const channel = { routeComponent:':channel', name:'channel' };
-// const spookyparam = { routeComponent:':spookyparam', name:'3spooky5me' };
+const root = { routeComponent: '/', name:'root' };
+const home = { routeComponent:'home', name:'home' };
+const messages = { routeComponent:'messages', name:'messages' };
+const team = { routeComponent:':team', name:'team' };
+const channel = { routeComponent:':channel', name:'channel' };
+const spookyparam = { routeComponent:':spookyparam', name:'3spooky5me' };
 //
 // const routes = Object.assign(root, {
 //   children: [Object.assign(home, {
@@ -82,34 +82,34 @@
 // const channel = () => ({ routeComponent:':channel', name:'channel' });
 // const spookyparam = () => ({ routeComponent:':spookyparam', name:'3spooky5me' });
 
-const root = { routeComponent: '/', name:'root' };
-const home = { routeComponent:'home', name:'home' };
-const messages = { routeComponent:'messages', name:'messages' };
-const team = { routeComponent:':team', name:'team' };
-const channel = { routeComponent:':channel', name:'channel' };
-const spookyparam = { routeComponent:':spookyparam', name:'3spooky5me' };
-
-function makeRoute(details, children) {
-  return Object.assign({}, details, children ? { children } : {});
-}
-
-const routes = makeRoute(root, [
-  makeRoute(home, [
-    makeRoute(messages, [
-      makeRoute(team, [
-        makeRoute(channel)
-      ])
-    ]),
-    makeRoute(spookyparam)
-  ])
-]);
-
-console.log(routes);
-console.log(routes.children[0]);
-console.log(routes.children[0].children[0]);
-console.log(routes.children[0].children[0].children[0]);
-console.log(routes.children[0].children[0].children[0].children[0]);
-console.log(routes.children[0].children[1]);
+// const root = { routeComponent: '/', name:'root' };
+// const home = { routeComponent:'home', name:'home' };
+// const messages = { routeComponent:'messages', name:'messages' };
+// const team = { routeComponent:':team', name:'team' };
+// const channel = { routeComponent:':channel', name:'channel' };
+// const spookyparam = { routeComponent:':spookyparam', name:'3spooky5me' };
+//
+// function makeRoute(details, children) {
+//   return Object.assign({}, details, children ? { children } : {});
+// }
+//
+// const routes = makeRoute(root, [
+//   makeRoute(home, [
+//     makeRoute(messages, [
+//       makeRoute(team, [
+//         makeRoute(channel)
+//       ])
+//     ]),
+//     makeRoute(spookyparam)
+//   ])
+// ]);
+//
+// console.log(routes);
+// console.log(routes.children[0]);
+// console.log(routes.children[0].children[0]);
+// console.log(routes.children[0].children[0].children[0]);
+// console.log(routes.children[0].children[0].children[0].children[0]);
+// console.log(routes.children[0].children[1]);
 
 
 
@@ -205,3 +205,82 @@ console.log(routes.children[0].children[1]);
 //
 //   return store;
 // }
+
+
+// const root = { routeComponent: '/', name:'root' };
+// const home = { routeComponent:'home', name:'home' };
+// const messages = { routeComponent:'messages', name:'messages' };
+// const team = { routeComponent:':team', name:'team' };
+// const channel = { routeComponent:':channel', name:'channel' };
+// const spookyparam = { routeComponent:':spookyparam', name:'3spooky5me' };
+
+// function makeRoute(details, children) {
+//   return Object.assign({}, details, children ? { children } : {});
+// }
+//
+// const routes = makeRoute(root, [
+//   makeRoute(home, [
+//     makeRoute(messages, [
+//       makeRoute(team, [
+//         makeRoute(channel)
+//       ])
+//     ]),
+//     makeRoute(spookyparam)
+//   ])
+// ]);
+
+// Function based approache
+
+const makeRoute = (rc, children) => {
+  return () => {
+    return children ? { ...rc, children } : { ...rc };
+  };
+};
+
+const routes = makeRoute(root, [
+  makeRoute(home, [
+    makeRoute(messages, [
+      makeRoute(team, [
+        makeRoute(channel)
+      ])
+    ]),
+    makeRoute(spookyparam)
+  ])
+]);
+
+//
+// const root = (...children) => {
+//   return { routeComponent: '/', name: 'root', children };
+// };
+//
+// const home = (...children) => {
+//   return { routeComponent: 'home', name: 'home', children };
+// };
+//
+// const other = (...children) => {
+//   return { routeComponent: 'other', name: 'other', children };
+// };
+//
+// const routes =
+// root(
+//   home(),
+//   other()
+// );
+
+
+const routeComponentPrinter = (routeComponent, indent = '') => {
+  const rc = routeComponent();
+  const rc_copy = {
+    ...rc
+  };
+  delete rc_copy.children;
+  console.log(indent, rc_copy);
+
+  if (rc.hasOwnProperty('children')) {
+    rc.children.forEach(child => {
+      routeComponentPrinter(child, `${indent}\t`);
+    });
+  }
+};
+
+routeComponentPrinter(routes);

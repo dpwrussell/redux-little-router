@@ -1,9 +1,6 @@
 import { LOCATION_CHANGED, LOCATION_INIT } from './action-types';
 
-export const locationDidChange = ({
-  location,
-  matchRoute
-}) => {
+export const locationDidChange = ({ location, matchRoute }) => {
   // Extract the pathname so that we don't match against the basename.
   // This avoids requiring basename-hardcoded routes.
   const { pathname } = location;
@@ -17,10 +14,7 @@ export const locationDidChange = ({
   };
 };
 
-export const locationInit = ({
-  location,
-  matchRoute
-}) => {
+export const locationInit = ({ location, matchRoute }) => {
   // Extract the pathname so that we don't match against the basename.
   // This avoids requiring basename-hardcoded routes.
   const { pathname } = location;

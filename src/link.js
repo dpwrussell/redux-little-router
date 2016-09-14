@@ -1,24 +1,10 @@
-// @flow
-import type { LocationDescriptor } from 'history';
-import type { RouterContext } from './provider';
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 
 import { PUSH, REPLACE } from './action-types';
 
-type Props = {
-  href: string | LocationDescriptor,
-  replaceState: bool,
-  persistQuery: bool,
-  target: string,
-  className: string,
-  style: Object,
-  children: ReactPropTypes.node
-};
-
 const LEFT_MOUSE_BUTTON = 0;
 
-const normalizeHref = location =>
-  `${location.basename || ''}${location.pathname}`;
+const normalizeHref = location => `${location.basename || ''}${location.pathname}`;
 
 const normalizeLocation = href => {
   if (typeof href === 'string') {
@@ -30,21 +16,17 @@ const normalizeLocation = href => {
   return href;
 };
 
-const resolveQueryForLocation = ({
-  linkLocation,
-  persistQuery,
-  currentLocation
-}) => {
-  const currentQuery = currentLocation &&
-    currentLocation.query;
+const resolveQueryForLocation = ({ linkLocation, persistQuery, currentLocation }) => {
+  const currentQuery = currentLocation
+                       && currentLocation.query;
 
   // Only use the query from state if it exists
   // and the href doesn't provide its own query
   if (
-    persistQuery &&
-    currentQuery &&
-    !linkLocation.search &&
-    !linkLocation.query
+    persistQuery
+    && currentQuery
+    && !linkLocation.search
+    && !linkLocation.query
   ) {
     return {
       pathname: linkLocation.pathname,
@@ -56,8 +38,7 @@ const resolveQueryForLocation = ({
 };
 
 const isNotLeftClick = e => e.button && e.button !== LEFT_MOUSE_BUTTON;
-const hasModifier = e =>
-  Boolean(e.shiftKey || e.altKey || e.metaKey || e.ctrlKey);
+const hasModifier = e => Boolean(e.shiftKey || e.altKey || e.metaKey || e.ctrlKey);
 
 const onClick = ({e, target, location, replaceState, router}) => {
   if (hasModifier(e) || isNotLeftClick(e) || target) {
@@ -74,46 +55,34 @@ const onClick = ({e, target, location, replaceState, router}) => {
   }
 };
 
-const Link = (
-  props: Props,
-  context: {
-    router: RouterContext
-  }
+export const Link = (
+  props,
+  context
 ) => {
-  const {
-    href,
-    target,
-    persistQuery,
-    replaceState,
-    children,
-    ...rest
-  } = props;
-
+  const { href, target, persistQuery, replaceState, children, ...rest } = props;
   const { router } = context;
 
-  const locationDescriptor =
-    resolveQueryForLocation({
-      linkLocation: normalizeLocation(href),
-      currentLocation: router.store.getState().router,
-      persistQuery
-    });
+  const locationDescriptor = resolveQueryForLocation({
+    linkLocation: normalizeLocation(href),
+    currentLocation: router.store.getState().router,
+    persistQuery
+  });
 
-  const location = router.store.history
-    .createLocation(locationDescriptor);
+  const location = router.store.history.createLocation(locationDescriptor);
 
   return (
     <a
-      href={normalizeHref(location)}
-      onClick={e => onClick({
+      href={ normalizeHref(location) }
+      onClick={ e => onClick({
         e,
         target,
         location,
         replaceState,
         router
-      })}
-      {...rest}
+      }) }
+      { ...rest }
     >
-      {children}
+      { children }
     </a>
   );
 };
@@ -122,12 +91,12 @@ Link.contextTypes = {
   router: PropTypes.object
 };
 
-const PersistentQueryLink = class extends Component {
+export class PersistentQueryLink extends React.Component {
   render() {
     const { children, ...rest } = this.props;
     return <Link {...rest} persistQuery>{children}</Link>;
   }
-};
+}
 
 PersistentQueryLink.propTypes = {
   children: PropTypes.node
@@ -136,5 +105,3 @@ PersistentQueryLink.propTypes = {
 PersistentQueryLink.contextTypes = {
   router: PropTypes.object
 };
-
-export { Link, PersistentQueryLink };

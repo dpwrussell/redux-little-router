@@ -1,23 +1,8 @@
-// @flow
-import type { Location } from 'history';
-import type { RouterContext } from './provider';
-
 import React, { PropTypes } from 'react';
 
-type Props = {
-  forRoute: string,
-  forRoutes: [string],
-  hasComponent: string,
-  withConditions: (location: Location) => bool,
-  children: ReactPropTypes.node
-};
+// TODO Route Not Found
 
-const ComponentFragment = (
-  props: Props,
-  context: {
-    router: RouterContext
-  }
-) => {
+const ComponentFragment = (props, context) => {
   const { forRoute, forRoutes, hasComponent, withConditions, children } = props;
   const { store } = context.router;
   const { matchRoute } = store;
@@ -26,6 +11,7 @@ const ComponentFragment = (
   const match = matchRoute(location.pathname);
 
   if (match) {
+
     if (
       forRoute &&
       match.route !== forRoute
@@ -45,7 +31,7 @@ const ComponentFragment = (
 
     if (
       hasComponent &&
-      match.result.every(r => r.name !== hasComponent)
+      match.routeComponents.every(r => r.name !== hasComponent)
     ) {
       return null;
     }
@@ -53,11 +39,11 @@ const ComponentFragment = (
     if (withConditions && !withConditions(location)) {
       return null;
     }
-  } else {
-    console.log('No match for', location.pathname);
+
+    return <div>{ children }</div>;
   }
 
-  return <div>{children}</div>;
+  return null;
 };
 
 ComponentFragment.contextTypes = {

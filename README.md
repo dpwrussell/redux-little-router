@@ -1,18 +1,27 @@
-# redux-little-router [![Build Status](https://travis-ci.org/FormidableLabs/redux-little-router.svg?branch=master)](https://travis-ci.org/FormidableLabs/redux-little-router) [![Coverage Status](https://coveralls.io/repos/github/FormidableLabs/redux-little-router/badge.svg?branch=master)](https://coveralls.io/github/FormidableLabs/redux-little-router?branch=master)
+# redux-routing-toolkit [![Build Status](https://travis-ci.org/dpwrussell/redux-routing-toolkit.svg?branch=master)](https://travis-ci.org/dpwrussell/redux-routing-toolkit) [![Coverage Status](https://coveralls.io/repos/github/dpwrussell/redux-routing-toolkit/badge.svg?branch=master)](https://coveralls.io/github/dpwrussell/redux-routing-toolkit?branch=master)
 
-`redux-little-router` is a tiny router for Redux applications that lets the URL do the talking.
+`redux-routing-toolkit` is a collection of modules for doing routing with Redux
 
-The router follows three basic principles:
+## redux-little-router
+
+As I was formulating the idea for this project, another amazing project was released, https://github.com/FormidableLabs/redux-little-router. This is a great project and fulfils many of the use cases I wished to write this for. However, I wanted to take some aspects of it even further in terms of decoupling the routing from the components. I have made extensive use of infrastructure setup and code from that project and am enormously indebted to the authors.
+
+The primary difference from `redux-little-router` is the syntax of the `routes` definition, how they are matched and how this allows ultimate flexibility in the view layer.
+
+Finally, as it is a toolkit it also provides several useful complimentary modules, such as middleware for "needing" async actions and middleware for code-splitting.
+
+## Principles
 
 - The URL is just another member of the state tree.
 - URL changes are just plain actions.
 - Route matching should be simple and extendable.
+- Routes should be based on constituent partial routes.
 
 While the core router does not depend on any view library, it provides flexible React bindings and components.
 
 ## Why another router?
 
-To understand why `redux-little-router` exists, check out our blog series, "Let the URL do the Talking":
+To understand why `redux-routing-toolkit` exists, check out the excellent `redux-little-router` blog series, "Let the URL do the Talking":
 
 [Part 1](http://formidable.com/blog/2016/07/11/let-the-url-do-the-talking-part-1-the-pain-of-react-router-in-redux/)
 [Part 2](http://formidable.com/blog/2016/07/19/let-the-url-do-the-talking-part-2-bargaining-and-acceptance-with-redux-and-react-router/)
@@ -20,105 +29,106 @@ To understand why `redux-little-router` exists, check out our blog series, "Let 
 
 While React Router is a great, well-supported library, it hoards URL state within the view layer and makes certain Redux patterns difficult, if not impossible. [This chart](http://imgur.com/a/Trlzw) outlines a major issue in accessing URL state from outside of React Router.
 
-`redux-little-router` makes URL state a first-class citizen of your Redux store and abstracts cross-browser navigation and routing into a pure Redux API.
+`redux-routing-toolkit` makes URL state a first-class citizen of your Redux store and abstracts cross-browser navigation and routing into a pure Redux API.
 
 ## Redux usage
 
-To hook into Redux applications, `redux-little-router` uses a store enhancer that wraps the `history` module and adds current and previous router state to your store. The enhancer listens for location changes and dispatches rich actions containing the URL, parameters, and any custom data assigned to the route. It also intercepts navigation actions and calls their equivalent method in `history`.
+To hook into Redux applications, `redux-routing-toolkit` uses a store enhancer that wraps the `history` module and adds current and previous router state to your store. It also uses a middleware to intercept navigation actions and calls their equivalent method in `history`. The enhancer listens for the `history` location changes and dispatches rich actions containing the URL, parameters and the partials that constitute the route. Those partials may have metadata assigned to them.
 
 ### Wiring up the boilerplate
 
-The following is an example of a `redux-little-router` setup that works on both the browser and the server. At the bare minimum, you'll need to install the store enhancer (`createStoreWithRouter`) into your Redux store.
+The following is an example of a `redux-routing-toolkit` setup that works on both the browser and the server. At the bare minimum, you'll need to install the store enhancer (`createStoreWithRouter`) into your Redux store.
 
 ```js
 import { compose, createStore } from 'redux';
-import { createStoreWithRouter } from 'redux-little-router';
+import { createStoreWithRouter } from 'redux-routing-toolkit';
 
 import yourReducer from './your-app';
 
-// Define your routes in a route-to-anything hash like below.
-// The value of the route key can be any serializable data.
-// This data gets attached to the `router` key of the state
-// tree when its corresponding route is matched and dispatched.
-// Useful for page titles and other route-specific data.
+// routes is a javascript object structure.
+// There are many ways to build the route and the metadata that is
+// supplied only need match the requirements of whatever mechanism is
+// making use of the routes. This may be middleware or React components
+// to control what is rendered depending on the current route.
+//
+// Part of what differentiates redux-routing-toolkit from
+// redux-little-router is that this routing structure can be built
+// from routeComponents.
+//
+// The only mandatory property of routeComponents is the `path`, but it is
+// highly advisable to also include a `name`. If making use of nested
+// routes then it is also mandatory not to use `children` for any other
+// purpose.
+//
+// The value of the path property can be any string that when assembled
+// into a route, can be used by https://github.com/snd/url-pattern for URL
+// matching and parameter extraction.
+//
+// The data from all the routeComponents is attached to the `router` key
+// of the state tree when its corresponding route is matched and dispatched.
+//
+// Some helper functions exist to make the process of assembling the
+// routes easier. We make use of `assembleComponentRoute` here
 
-// Uses https://github.com/snd/url-pattern for URL matching
-// and parameter extraction.
-const routes = {
-  '/': {
-    title: 'Home'
-  },
-  '/messages': {
-    title: 'Message'
-  },
-  '/messages/:user': {
-    title: 'Message History'
-  }
-};
+import { assembleComponentRoute as assemble } from 'redux-routing-toolkit';
+import ExampleComponent from './ExampleComponent';
+
+// Define the routeComponents
+const root = { path: '/', name: 'root' };
+const items = { path: 'items', name: 'items' };
+const item = { path: 'item/:itemId', name: 'item' };
+// An example of a routeComponent to make use of the `PlaceholderFragment`
+// React component
+const comp = { path: 'comp', name: 'comp', component: ExampleComponent, componentProps: { a: 1, b: 2 } };
+const compchild = { path: 'compchild', name: 'compchild' };
+const abs = { path: 'several/levels/deep/:anId', name: 'abs' };
+
+// Compose the routeComponents
+// A single '/' component is always required so the tree has a starting point,
+// but otherwise routes can be nested or flat as desired
+const routes =
+assemble(root,
+  assemble(items),
+  assemble(item),
+  assemble(comp,
+    assemble(compchild)
+  ),
+  assemble(abs)
+);
 
 // This is an example of initializing the router in a client-only
 // single-page app. Passing in at least the `pathname` will allow
 // `createStoreWithRouter` to automatically setup the initial state
 // for the first browser location.
-const clientOnlyStore = createStore(
-  yourReducer,
-  initialState,
-  createStoreWithRouter({
-    // The configured routes. Required.
-    routes,
-    // The basename for all routes. Optional.
-    basename: '/example',
-    // The initial URL. Required in all cases except for when
-    // rehydrating the state tree on the client after a server render.
-    pathname: '/home',
-    // The initial query string object. Optional.
-    query: {
-      ex: 'ample'
-    }
-  })
+import { createStore, applyMiddleware, compose } from 'redux';
+import thunkMiddleware from 'redux-thunk';
+import { makeRouter } from 'redux-routing-toolkit';
+import reducers from '../reducers';
+import routes from '../routes';
+
+// makeRouter handles most typical use cases
+const router = makeRouter({
+  routes
+});
+
+const enhancer = compose(
+
+  applyMiddleware(
+    thunkMiddleware,
+    router.storeMiddleware
+  ),
+
+  router.storeEnhancer
 );
 
-// This is a wrapper function for setting up router boilerplate
-// for server-rendered universal React applications.
+const store = createStore(
+  reducers,
+  initialState,
+  enhancer
+);
 
-// You can pull `url` and `query` from your express or hapi routes.
-// The below example uses a URL object from an express request.
-const initializeStore = ({ routes, requestUrl, requestQuery }) => {
-  // Grab the initial state the server attached to your template after render
-  const initialState = INITIAL_STATE_FROM_SERVER_RENDER;
-
-  // Notice that `pathname` isn't required when rehydrating
-  // the store since redux-little-router already added
-  // the pathname to the initial state.
-  const routerOptions = initialState ? {
-    routes,
-    basename: BASENAME_FROM_SERVER_RENDER
-  } : {
-    routes,
-    basename: requestUrl.baseUrl,
-    pathname: requestUrl.pathname,
-    query: initialQuery,
-    forServerRender: true // required for server renders!
-  };
-
-  return createStore(
-    yourReducer,
-    initialState,
-    createStoreWithRouter(routerOptions)
-  );
-};
-```
-
-Often, you'll want to update state or trigger side effects after loading the initial URL. To maintain compatibility with other store enhancers (particularly ones that handle side effects, like `redux-loop` or `redux-saga`), we require this optional initial dispatch to happen in userland code by doing the following:
-
-```js
-import { initializeCurrentLocation } from 'redux-little-router';
-
-// ...after creating your store
-const initialLocation = store.getState().router;
-if (initialLocation) {
-  store.dispatch(initializeCurrentLocation(initialLocation));
-}
+// History location changes dispatch locationInit (Required)
+router.historyInit(store);
 ```
 
 ### Provided actions and state

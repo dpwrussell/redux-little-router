@@ -4,9 +4,9 @@ import { mount} from 'enzyme';
 
 import React from 'react';
 
-import ComponentFragment from '../src/component-fragment';
+import ComponentFragment from '../src/react/ComponentFragment';
 
-import { fakeContextWithComponentRouting } from './util';
+import { fakeContext } from './util';
 
 describe('ComponentFragment', () => {
 
@@ -15,7 +15,7 @@ describe('ComponentFragment', () => {
       <ComponentFragment forRoute='/home/messages/:team'>
         <p>Hey, wait, I'm having one of those things...you know, a headache with pictures.</p>
       </ComponentFragment>,
-      fakeContextWithComponentRouting({
+      fakeContext({
         pathname: '/home/messages/a-team'
       })
     );
@@ -29,7 +29,7 @@ describe('ComponentFragment', () => {
       <ComponentFragment forRoute='/home/messages/:team'>
         <p>Nothing to see here!</p>
       </ComponentFragment>,
-      fakeContextWithComponentRouting({
+      fakeContext({
         pathname: '/home'
       })
     );
@@ -56,7 +56,7 @@ describe('ComponentFragment', () => {
         <ComponentFragment forRoutes={multiRoutes}>
           <p>If we hit that bullseye, the rest of the dominos will fall like a house of cards. Checkmate.</p>
         </ComponentFragment>,
-        fakeContextWithComponentRouting({ pathname })
+        fakeContext({ pathname })
       );
       expect(wrapper.find('p').node.textContent).to.equal(
         'If we hit that bullseye, the rest of the dominos will fall like a house of cards. Checkmate.'
@@ -69,7 +69,7 @@ describe('ComponentFragment', () => {
       <ComponentFragment forRoutes={multiRoutes}>
         <p>Nothing to see here!</p>
       </ComponentFragment>,
-      fakeContextWithComponentRouting({
+      fakeContext({
         pathname: '/home/fhqwhgads'
       })
     );
@@ -83,7 +83,7 @@ describe('ComponentFragment', () => {
       }>
         <p>In the game of chess, you can never let your adversary see your pieces.</p>
       </ComponentFragment>,
-      fakeContextWithComponentRouting({
+      fakeContext({
         query: {
           ayy: 'lmao'
         }
@@ -101,7 +101,7 @@ describe('ComponentFragment', () => {
       }>
         <p>In the game of chess, you can never let your adversary see your pieces.</p>
       </ComponentFragment>,
-      fakeContextWithComponentRouting({
+      fakeContext({
         query: {
           ayy: 'yyy'
         }
@@ -115,7 +115,7 @@ describe('ComponentFragment', () => {
       <ComponentFragment hasComponent='team'>
         <p>As you know, the key to victory is the element of surprise. Surprise!</p>
       </ComponentFragment>,
-      fakeContextWithComponentRouting({
+      fakeContext({
         pathname: '/home/messages/a-team'
       })
     );
@@ -129,7 +129,7 @@ describe('ComponentFragment', () => {
       <ComponentFragment hasComponent='messages'>
         <p>Nothing to see here!</p>
       </ComponentFragment>,
-      fakeContextWithComponentRouting({
+      fakeContext({
         pathname: '/home'
       })
     );
@@ -141,7 +141,7 @@ describe('ComponentFragment', () => {
       <ComponentFragment hasComponent='home'>
         <p>You win again, gravity!</p>
       </ComponentFragment>,
-      fakeContextWithComponentRouting({
+      fakeContext({
         pathname: '/home/messages/a-team'
       })
     );

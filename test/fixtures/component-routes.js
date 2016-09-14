@@ -1,28 +1,28 @@
-import { makeComponentRoute as makeCR } from '../../src';
+import { assembleComponentRoute as assemble } from '../../src';
 
-const root = { routeComponent: '/', name: 'root' };
-const home = { routeComponent: 'home', name: 'home' };
-const messages = { routeComponent: 'messages', name: 'messages' };
-const team = { routeComponent: ':team', name: 'team' };
-const channel = { routeComponent: ':channel', name: 'channel' };
-const spookyparam = { routeComponent: ':spookyparam', name: '3spooky5me' };
-const global = { routeComponent: 'global', name: 'global' };
-const absolute = { routeComponent: 'a/b/c/:d', name: 'absolute' };
+const root = { path: '/', name: 'root' };
+const home = { path: 'home', name: 'home' };
+const messages = { path: 'messages', name: 'messages' };
+const team = { path: ':team', name: 'team' };
+const channel = { path: ':channel', name: 'channel' };
+const spookyparam = { path: ':spookyparam', name: '3spooky5me' };
+const global = { path: 'global', name: 'global' };
+const absolute = { path: 'a/b/c/:d', name: 'absolute' };
 
 const routes =
-makeCR(root,
-  makeCR(home,
-    makeCR(messages,
-      makeCR(team,
-        makeCR(channel)
+assemble(root,
+  assemble(home,
+    assemble(messages,
+      assemble(team,
+        assemble(channel)
       )
     ),
-    makeCR(global,
-      makeCR(channel)
+    assemble(global,
+      assemble(channel)
     ),
-    makeCR(spookyparam)
+    assemble(spookyparam)
   ),
-  makeCR(absolute)
+  assemble(absolute)
 );
 
 export default routes;

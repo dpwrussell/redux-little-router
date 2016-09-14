@@ -32,24 +32,26 @@ describe('Router reducer', () => {
     });
   });
 
-  it('does nothing if the action pathname is the same as the existing', () => {
-    const action = {
-      type: LOCATION_CHANGED,
-      payload: {
-        pathname: '/rofl',
-        other: 'stuff'
-      }
-    };
-    const result = routerReducer({
-      pathname: '/rofl',
-      other: 'things'
-    }, action);
-
-    expect(result).to.deep.equal({
-      pathname: '/rofl',
-      other: 'things'
-    });
-  });
+  // This is not the reducers job, if necessary, check for this before
+  // dispatching the action
+  // it('does nothing if the action pathname is the same as the existing', () => {
+  //   const action = {
+  //     type: LOCATION_CHANGED,
+  //     payload: {
+  //       pathname: '/rofl',
+  //       other: 'stuff'
+  //     }
+  //   };
+  //   const result = routerReducer({
+  //     pathname: '/rofl',
+  //     other: 'things'
+  //   }, action);
+  //
+  //   expect(result).to.deep.equal({
+  //     pathname: '/rofl',
+  //     other: 'things'
+  //   });
+  // });
 
   it('is not affected by other action types', () => {
     const action = {

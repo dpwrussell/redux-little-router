@@ -4,20 +4,20 @@ import { createComponentMatcher } from '../src';
 import componentRoutes from './fixtures/component-routes';
 
 describe('createComponentMatcher', () => {
-  it('matches URLs and returns the route matched, their params and value in the route hash', () => {
+  it('matches URLs and returns the route matched, their params and routeComponents constituating it', () => {
     const matchRoute = createComponentMatcher(componentRoutes);
 
     expect(matchRoute('/home')).to.deep.equal({
       route: '/home',
       params: {},
-      result: [
+      routeComponents: [
         {
           name: 'root',
-          routeComponent: '/'
+          path: '/'
         },
         {
           name: 'home',
-          routeComponent: 'home'
+          path: 'home'
         }
       ]
     });
@@ -25,18 +25,18 @@ describe('createComponentMatcher', () => {
     expect(matchRoute('/home/messages')).to.deep.equal({
       route: '/home/messages',
       params: {},
-      result: [
+      routeComponents: [
         {
           name: 'root',
-          routeComponent: '/'
+          path: '/'
         },
         {
           name: 'home',
-          routeComponent: 'home'
+          path: 'home'
         },
         {
           name: 'messages',
-          routeComponent: 'messages'
+          path: 'messages'
         }
       ]
     });
@@ -46,22 +46,22 @@ describe('createComponentMatcher', () => {
       params: {
         team: 'a-team'
       },
-      result: [
+      routeComponents: [
         {
           name: 'root',
-          routeComponent: '/'
+          path: '/'
         },
         {
           name: 'home',
-          routeComponent: 'home'
+          path: 'home'
         },
         {
           name: 'messages',
-          routeComponent: 'messages'
+          path: 'messages'
         },
         {
           name: 'team',
-          routeComponent: ':team'
+          path: ':team'
         }
       ]
     });
@@ -72,26 +72,26 @@ describe('createComponentMatcher', () => {
         team: 'a-team',
         channel: 'the-wat-channel'
       },
-      result: [
+      routeComponents: [
         {
           name: 'root',
-          routeComponent: '/'
+          path: '/'
         },
         {
           name: 'home',
-          routeComponent: 'home'
+          path: 'home'
         },
         {
           name: 'messages',
-          routeComponent: 'messages'
+          path: 'messages'
         },
         {
           name: 'team',
-          routeComponent: ':team'
+          path: ':team'
         },
         {
           name: 'channel',
-          routeComponent: ':channel'
+          path: ':channel'
         }
       ]
     });
@@ -101,18 +101,18 @@ describe('createComponentMatcher', () => {
       params: {
         spookyparam: 'doot'
       },
-      result: [
+      routeComponents: [
         {
           name: 'root',
-          routeComponent: '/'
+          path: '/'
         },
         {
           name: 'home',
-          routeComponent: 'home'
+          path: 'home'
         },
         {
           name: '3spooky5me',
-          routeComponent: ':spookyparam'
+          path: ':spookyparam'
         }
       ]
     });
@@ -122,22 +122,22 @@ describe('createComponentMatcher', () => {
       params: {
         channel: 'channel-4'
       },
-      result: [
+      routeComponents: [
         {
           name: 'root',
-          routeComponent: '/'
+          path: '/'
         },
         {
           name: 'home',
-          routeComponent: 'home'
+          path: 'home'
         },
         {
           name: 'global',
-          routeComponent: 'global'
+          path: 'global'
         },
         {
           name: 'channel',
-          routeComponent: ':channel'
+          path: ':channel'
         }
       ]
     });
@@ -147,14 +147,14 @@ describe('createComponentMatcher', () => {
       params: {
         d: 'dee'
       },
-      result: [
+      routeComponents: [
         {
           name: 'root',
-          routeComponent: '/'
+          path: '/'
         },
         {
           name: 'absolute',
-          routeComponent: 'a/b/c/:d'
+          path: 'a/b/c/:d'
         }
       ]
     });

@@ -1,10 +1,7 @@
 import sinon from 'sinon';
 import createMemoryHistory from 'history/lib/createMemoryHistory';
 
-import createMatcher from '../../src/create-matcher';
 import createComponentMatcher from '../../src/create-component-matcher';
-
-import routes from '../fixtures/routes';
 import componentRoutes from '../fixtures/component-routes';
 
 export const captureErrors = (done, assertions) => {
@@ -29,7 +26,7 @@ export const fakeStore = ({
   }
 
   return {
-    getState() {
+    getState: () => {
       return {
         router: {
           pathname,
@@ -40,40 +37,7 @@ export const fakeStore = ({
       };
     },
 
-    dispatch(action) {
-      assertion && assertion(action);
-    },
-
-    matchRoute: createMatcher(routes),
-    history
-  };
-};
-
-export const fakeStoreWithComponentRouting = ({
-  assertion,
-  pathname = '/home/messages/b-team',
-  query = { test: 'ing' },
-  fakeNewLocation
-} = {}) => {
-  const history = createMemoryHistory();
-  if (fakeNewLocation) {
-    sinon.stub(history, 'createLocation')
-      .returns(fakeNewLocation);
-  }
-
-  return {
-    getState() {
-      return {
-        router: {
-          pathname,
-          query,
-          search: '?test=ing',
-          action: 'POP'
-        }
-      };
-    },
-
-    dispatch(action) {
+    dispatch: action => {
       assertion && assertion(action);
     },
 
@@ -91,24 +55,6 @@ export const fakeContext = ({
   context: {
     router: {
       store: fakeStore({
-        assertion,
-        pathname,
-        query,
-        fakeNewLocation
-      })
-    }
-  }
-});
-
-export const fakeContextWithComponentRouting = ({
-  fakeNewLocation,
-  assertion,
-  pathname = '/home/messages/b-team',
-  query = { test: 'ing' }
-} = {}) => ({
-  context: {
-    router: {
-      store: fakeStoreWithComponentRouting({
         assertion,
         pathname,
         query,

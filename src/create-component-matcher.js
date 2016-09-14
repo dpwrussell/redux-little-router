@@ -1,18 +1,17 @@
-// @flow
 import UrlPattern from 'url-pattern';
 import { join as pathJoin } from 'path';
 import memoize from 'lru-memoize';
 
-export default (routes: Object) => {
+export default routes => {
 
-  const fn = (incomingUrl: string) => {
+  const fn = incomingUrl => {
 
     // Discard query strings
     const route = incomingUrl.split('?')[0]; // eslint-disable-line no-magic-numbers
 
     const traverseRoutes = (toMatch, routeComponent, parentPath = '') => {
-      if (routeComponent.routeComponent) {
-        const path = pathJoin(parentPath, routeComponent.routeComponent);
+      if (routeComponent.path) {
+        const path = pathJoin(parentPath, routeComponent.path);
         const pattern = new UrlPattern(path);
         const match = pattern.match(toMatch);
         if (match) {
@@ -26,9 +25,9 @@ export default (routes: Object) => {
         const children = routeComponent.children;
         if (children) {
           for (const child of children) {
-            const result = traverseRoutes(toMatch, child, path);
-            if (result) {
-              return [routeComponent].concat(result);
+            const routeComponents = traverseRoutes(toMatch, child, path);
+            if (routeComponents) {
+              return [routeComponent].concat(routeComponents);
             }
           }
         }
@@ -52,18 +51,20 @@ export default (routes: Object) => {
     // {
     //   route: The route which has actually been matched,
     //   params: Any parameters (or empty object) that have been matched,
-    //   result: The tree components involved in this route
+    //   routeComponents: The tree components involved in this route
     // }
+
+    // eslint-disable-next-line no-magic-numbers
+    const routeComponents = (matchedRoute.slice(0, -1).concat(finalRouteComponent.routeComponent)).map(r => {
+      const childlessR = Object.assign({}, r);
+      delete childlessR.children;
+      return childlessR;
+    });
 
     return {
       route: finalRouteComponent.route,
-      // eslint-disable-next-line no-magic-numbers
-      result: (matchedRoute.slice(0, -1).concat(finalRouteComponent.routeComponent)).map(r => {
-        const childlessR = Object.assign({}, r);
-        delete childlessR.children;
-        return childlessR;
-      }),
-      params: finalRouteComponent.params
+      params: finalRouteComponent.params,
+      routeComponents
     };
 
   };
