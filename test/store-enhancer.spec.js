@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
-import { compose, createStore } from 'redux';
+import { compose, applyMiddleware, createStore } from 'redux';
 import { install, combineReducers } from 'redux-loop';
 
 import {
@@ -11,6 +11,8 @@ import {
 } from '../src/action-types';
 
 import createStoreWithRouter from '../src/store-enhancer';
+import createRouterMiddleware from '../src/store-middleware';
+import makeRouter from '../src/util';
 
 import { locationDidChange, locationInit } from '../src/action-creators';
 
@@ -18,18 +20,70 @@ import routes from './fixtures/component-routes';
 
 chai.use(sinonChai);
 
-const createStoreWithSpy = nextCreateStore =>
+// Store with spy on dispatch. Also attaches that spy to the store for
+// access
+const storeWithSpyEnhancer = nextCreateStore =>
   (reducer, initialState, enhancer) => {
     const store = nextCreateStore(reducer, initialState, enhancer);
     const dispatchSpy = sinon.spy(store, 'dispatch');
     return {...store, dispatch: dispatchSpy, dispatchSpy};
   };
 
-const defaultFakeInitialState = {
-  router: {
-    pathname: '/home/messages/a-team/pity-fool'
-  }
+const createHistoryStub = () => ({
+  push: sinon.stub(),
+  replace: sinon.stub(),
+  go: sinon.stub(),
+  goBack: sinon.stub(),
+  goForward: sinon.stub(),
+  listen: sinon.stub(),
+  createLocation: () => ({
+    pathname: '/home',
+    query: {
+      yo: 'yo'
+    }
+  })
+});
+
+// TODO Initialstate does not apply to the router anymore
+// const defaultFakeInitialState = {
+//   router: {
+//     pathname: '/home/messages/a-team/pity-fool'
+//   }
+// };
+
+const createFakeStore = ({
+  initialState,
+  useHistoryStub = true,
+  isLoop = false,
+  enhancerOptions = {}
+}) => {
+
+  const reducers = isLoop ? combineReducers({ stuff: state => state }) : state => state;
+  const history = useHistoryStub ? createHistoryStub() : undefined;
+  const router = makeRouter({ routes, history, ...enhancerOptions });
+
+  const enhancer = compose(
+    storeWithSpyEnhancer,
+    applyMiddleware(
+      // TODO Do I need this?
+      // thunkMiddleware,
+      router.storeMiddleware
+    ),
+
+    router.storeEnhancer
+  );
+
+  const store = createStore(
+    reducers,
+    initialState,
+    enhancer
+  );
+
+  // History location changes dispatch locationInit
+  router.historyInit(store);
 };
+
+
 
 const fakeStore = ({
   initialState = defaultFakeInitialState,
