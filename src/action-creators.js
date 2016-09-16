@@ -5,12 +5,15 @@ export const locationDidChange = ({ location, matchRoute }) => {
   // This avoids requiring basename-hardcoded routes.
   const { pathname } = location;
 
+  const payload = {
+    ...location,
+    ...matchRoute(pathname)
+  };
+  delete payload.routeComponents;
+
   return {
     type: LOCATION_CHANGED,
-    payload: {
-      ...location,
-      ...matchRoute(pathname)
-    }
+    payload
   };
 };
 
@@ -19,11 +22,16 @@ export const locationInit = ({ location, matchRoute }) => {
   // This avoids requiring basename-hardcoded routes.
   const { pathname } = location;
 
+  const payload = {
+    ...location,
+    ...matchRoute(pathname)
+  };
+  delete payload.routeComponents;
+
+  console.log('INIT', payload);
+
   return {
-    type: LOCATION_INIT,
-    payload: {
-      ...location,
-      ...matchRoute(pathname)
-    }
+    type: LOCATION_CHANGED,
+    payload
   };
 };
