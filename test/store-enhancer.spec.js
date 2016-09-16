@@ -10,8 +10,6 @@ import {
   GO, GO_BACK, GO_FORWARD
 } from '../src/action-types';
 
-import createStoreWithRouter from '../src/store-enhancer';
-import createRouterMiddleware from '../src/store-middleware';
 import { makeRouter, makeServerRouter } from '../src/util';
 
 import { locationDidChange, locationInit } from '../src/action-creators';
@@ -26,11 +24,6 @@ const storeWithSpyEnhancer = nextCreateStore => (reducer, initialState, enhancer
   const store = nextCreateStore(reducer, initialState, enhancer);
   const spy = sinon.spy(store, 'dispatch');
   return {...store, dispatch: spy, storeSpy: spy};
-};
-
-const createMiddlewareSpy = store => next => action => {
-  const spy = sinon.spy(next);
-  return spy(action);
 };
 
 const createHistoryStub = () => ({
@@ -75,14 +68,26 @@ const createFakeStore = ({
                ? makeServerRouter({ routes, history, ...enhancerOptions })
                : makeRouter({ routes, history, ...enhancerOptions });
 
-  const mSpy = middlewareSpy;
+  let middlewareSpy;
+  const spyMiddleware = store => next => {
+    const spy = sinon.spy(next);
+    if (middlewareSpy !== undefined) {
+      console.log('Extremely bad, replacing spy');
+    }
+    middlewareSpy = spy;
+    console.log('spying!');
+    return action => {
+      return spy(action);
+    };
+  };
+
 
   const enhancer = compose(
     storeWithSpyEnhancer,
     applyMiddleware(
       // TODO Add a spy on the middleware?
-      router.storeMiddleware,
-      middlewareSpy
+      spyMiddleware,
+      router.storeMiddleware
     ),
 
     router.storeEnhancer
@@ -94,8 +99,7 @@ const createFakeStore = ({
     enhancer
   );
 
-  // History location changes dispatch locationInit
-  // router.historyInit(store);
+  store.middlewareSpy = middlewareSpy;
 
   return { store, router };
 };
@@ -174,6 +178,7 @@ describe('Router store enhancer', () => {
     });
   });
 
+
   it('can create its own browser history', done => {
     const { store } = createFakeStore({
       useHistoryStub: false,
@@ -203,7 +208,7 @@ describe('Router store enhancer', () => {
   });
 
   it('can create its own server history', done => {
-    const { store, router } = createFakeStore({
+    const { store } = createFakeStore({
       useHistoryStub: false,
       serverRender: true
     });
@@ -304,6 +309,7 @@ describe('Router store enhancer', () => {
 
     expect(history.push).to.be.calledOnce;
     expect(store.storeSpy).to.be.calledOnce;
+    expect(store.middlewareSpy).to.be.calledOnce;
   });
 
   const actionMethodMap = {
@@ -342,6 +348,7 @@ describe('Router store enhancer', () => {
       expect(history[method]).to.not.have.been.called;
     });
     expect(store.storeSpy).to.be.calledOnce;
+    expect(store.middlewareSpy).to.be.calledOnce;
   });
 
 
