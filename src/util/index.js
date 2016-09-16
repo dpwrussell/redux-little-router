@@ -1,4 +1,5 @@
 import createBrowserHistory from 'history/lib/createBrowserHistory';
+import createMemoryHistory from 'history/lib/createMemoryHistory';
 import useBasename from 'history/lib/useBasename';
 import useQueries from 'history/lib/useQueries';
 
@@ -54,9 +55,12 @@ export const makeRouter = ({
   };
 };
 
-// export const makeComponentRoute = (details, ...children) => {
-//   return Object.assign({}, details, children ? { children } : {});
-// };
+export const makeServerRouter = (options) => {
+  return makeRouter({
+    history: useBasename(useQueries(createMemoryHistory))(),
+    ...options
+  });
+};
 
 export const assembleComponentRoute = (componentRoute, ...children) => {
   return Object.assign({}, componentRoute, children ? { children } : {});

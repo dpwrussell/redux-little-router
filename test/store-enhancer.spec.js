@@ -12,7 +12,7 @@ import {
 
 import createStoreWithRouter from '../src/store-enhancer';
 import createRouterMiddleware from '../src/store-middleware';
-import makeRouter from '../src/util';
+import { makeRouter, makeServerRouter } from '../src/util';
 
 import { locationDidChange, locationInit } from '../src/action-creators';
 
@@ -22,12 +22,16 @@ chai.use(sinonChai);
 
 // Store with spy on dispatch. Also attaches that spy to the store for
 // access
-const storeWithSpyEnhancer = nextCreateStore =>
-  (reducer, initialState, enhancer) => {
-    const store = nextCreateStore(reducer, initialState, enhancer);
-    const dispatchSpy = sinon.spy(store, 'dispatch');
-    return {...store, dispatch: dispatchSpy, dispatchSpy};
-  };
+const storeWithSpyEnhancer = nextCreateStore => (reducer, initialState, enhancer) => {
+  const store = nextCreateStore(reducer, initialState, enhancer);
+  const spy = sinon.spy(store, 'dispatch');
+  return {...store, dispatch: spy, storeSpy: spy};
+};
+
+const createMiddlewareSpy = store => next => action => {
+  const spy = sinon.spy(next);
+  return spy(action);
+};
 
 const createHistoryStub = () => ({
   push: sinon.stub(),
@@ -55,19 +59,30 @@ const createFakeStore = ({
   initialState,
   useHistoryStub = true,
   isLoop = false,
-  enhancerOptions = {}
-}) => {
+  enhancerOptions = {},
+  serverRender = false
+} = {}) => {
 
-  const reducers = isLoop ? combineReducers({ stuff: state => state }) : state => state;
-  const history = useHistoryStub ? createHistoryStub() : undefined;
-  const router = makeRouter({ routes, history, ...enhancerOptions });
+  const reducers = isLoop
+                 ? combineReducers({ stuff: state => state })
+                 : state => state;
+
+  const history = useHistoryStub
+                ? createHistoryStub()
+                : undefined;
+
+  const router = serverRender
+               ? makeServerRouter({ routes, history, ...enhancerOptions })
+               : makeRouter({ routes, history, ...enhancerOptions });
+
+  const mSpy = middlewareSpy;
 
   const enhancer = compose(
     storeWithSpyEnhancer,
     applyMiddleware(
-      // TODO Do I need this?
-      // thunkMiddleware,
-      router.storeMiddleware
+      // TODO Add a spy on the middleware?
+      router.storeMiddleware,
+      middlewareSpy
     ),
 
     router.storeEnhancer
@@ -80,11 +95,12 @@ const createFakeStore = ({
   );
 
   // History location changes dispatch locationInit
-  router.historyInit(store);
+  // router.historyInit(store);
+
+  return { store, router };
 };
 
-
-
+/*
 const fakeStore = ({
   initialState = defaultFakeInitialState,
   useHistoryStub = true,
@@ -132,15 +148,16 @@ const fakeStore = ({
 
   return { store, historyStub };
 };
+*/
 
 describe('Router store enhancer', () => {
   it('updates the pathname in the state tree after dispatching history actions', done => {
-    const { store } = fakeStore();
+    const { store } = createFakeStore();
 
     store.subscribe(() => {
       const state = store.getState();
-      expect(state).to.have.deep.property('router.result')
-        .that.deep.equals({ name: 'channel' });
+      expect(state).to.have.deep.property('router.routeComponents')
+        .that.deep.equals([{ name: 'channel' }]);
       done();
     });
 
@@ -148,15 +165,17 @@ describe('Router store enhancer', () => {
       type: LOCATION_CHANGED,
       payload: {
         pathname: '/home/messages/a-team/fool-pity',
-        result: {
-          name: 'channel'
-        }
+        routeComponents: [
+          {
+            name: 'channel'
+          }
+        ]
       }
     });
   });
 
   it('can create its own browser history', done => {
-    const { store } = fakeStore({
+    const { store } = createFakeStore({
       useHistoryStub: false,
       enhancerOptions: {
         forServerRender: false
@@ -165,8 +184,8 @@ describe('Router store enhancer', () => {
 
     store.subscribe(() => {
       const state = store.getState();
-      expect(state).to.have.deep.property('router.result')
-        .that.deep.equals({ name: 'channel' });
+      expect(state).to.have.deep.property('router.routeComponents')
+        .that.deep.equals([{ name: 'channel' }]);
       done();
     });
 
@@ -174,25 +193,25 @@ describe('Router store enhancer', () => {
       type: LOCATION_CHANGED,
       payload: {
         pathname: '/home/messages/a-team/fool-pity',
-        result: {
-          name: 'channel'
-        }
+        routeComponents: [
+          {
+            name: 'channel'
+          }
+        ]
       }
     });
   });
 
   it('can create its own server history', done => {
-    const { store } = fakeStore({
+    const { store, router } = createFakeStore({
       useHistoryStub: false,
-      enhancerOptions: {
-        forServerRender: true
-      }
+      serverRender: true
     });
 
     store.subscribe(() => {
       const state = store.getState();
-      expect(state).to.have.deep.property('router.result')
-        .that.deep.equals({ name: 'channel' });
+      expect(state).to.have.deep.property('router.routeComponents')
+        .that.deep.equals([{ name: 'channel' }]);
       done();
     });
 
@@ -200,20 +219,22 @@ describe('Router store enhancer', () => {
       type: LOCATION_CHANGED,
       payload: {
         pathname: '/home/messages/a-team/fool-pity',
-        result: {
-          name: 'channel'
-        }
+        routeComponents: [
+          {
+            name: 'channel'
+          }
+        ]
       }
     });
   });
 
   it('supports Redux Loop', done => {
-    const { store } = fakeStore({ isLoop: true });
+    const { store } = createFakeStore({ isLoop: true });
 
     store.subscribe(() => {
       const state = store.getState();
-      expect(state).to.have.deep.property('router.result')
-        .that.deep.equals({ name: 'channel' });
+      expect(state).to.have.deep.property('router.routeComponents')
+        .that.deep.equals([{ name: 'channel' }]);
       done();
     });
 
@@ -221,9 +242,11 @@ describe('Router store enhancer', () => {
       type: LOCATION_CHANGED,
       payload: {
         pathname: '/home/messages/a-team/fool-pity',
-        result: {
-          name: 'channel'
-        }
+        routeComponents: [
+          {
+            name: 'channel'
+          }
+        ]
       }
     });
   });
@@ -242,9 +265,11 @@ describe('Router store enhancer', () => {
         params: {
           fakeParam: 'things'
         },
-        result: {
-          title: 'things'
-        }
+        routeComponents: [
+          {
+            title: 'things'
+          }
+        ]
       })
     });
 
@@ -260,24 +285,25 @@ describe('Router store enhancer', () => {
         params: {
           fakeParam: 'things'
         },
-        result: {
-          title: 'things'
-        }
+        routeComponents: [
+          {
+            title: 'things'
+          }
+        ]
       }
     });
   });
 
-  // TODO Changes to initial state break the fake stores. Rebuild those next
 
   it('dispatches a LOCATION_CHANGED action on location change', () => {
-    const { store, historyStub } = fakeStore();
+    const { store, router: { history } } = createFakeStore();
     store.dispatch({
       type: PUSH,
       payload: {}
     });
 
-    expect(historyStub.push).to.be.calledOnce;
-    expect(store.dispatchSpy).to.be.calledOnce;
+    expect(history.push).to.be.calledOnce;
+    expect(store.storeSpy).to.be.calledOnce;
   });
 
   const actionMethodMap = {
@@ -292,7 +318,7 @@ describe('Router store enhancer', () => {
     const method = actionMethodMap[actionType];
 
     it(`calls history.${method} when intercepting ${actionType}`, () => {
-      const { store, historyStub } = fakeStore();
+      const { store, router: { history } } = createFakeStore();
       store.dispatch({
         type: actionType,
         payload: {
@@ -300,12 +326,12 @@ describe('Router store enhancer', () => {
         }
       });
 
-      expect(historyStub[method]).to.have.been.calledOnce;
+      expect(history[method]).to.have.been.calledOnce;
     });
   });
 
   it('passes normal actions through the dispatch chain', () => {
-    const { store, historyStub } = fakeStore();
+    const { store, router: { history } } = createFakeStore();
     store.dispatch({
       type: 'NOT_MY_ACTION_NOT_MY_PROBLEM',
       payload: {}
@@ -313,8 +339,10 @@ describe('Router store enhancer', () => {
 
     Object.keys(actionMethodMap).forEach(actionType => {
       const method = actionMethodMap[actionType];
-      expect(historyStub[method]).to.not.have.been.called;
+      expect(history[method]).to.not.have.been.called;
     });
-    expect(store.dispatchSpy).to.be.calledOnce;
+    expect(store.storeSpy).to.be.calledOnce;
   });
+
+
 });
