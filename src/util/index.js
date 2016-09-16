@@ -22,7 +22,7 @@ export const makeRouter = ({
   const matchRoute = routeMatcher(routes);
 
   // Create middleware
-  const storeMiddleware = storeMiddlewareFactory(history);
+  const storeMiddleware = storeMiddlewareFactory(history, matchRoute);
 
   // Create enhancer
   const storeEnhancer = storeEnhancerFactory(history, matchRoute);

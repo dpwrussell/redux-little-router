@@ -13,6 +13,8 @@ import { makeRouter, makeServerRouter,
          makeHistory } from './util';
 import codeSplitMiddleware from './code-split/middleware';
 import codeSplitUtils from './code-split/util';
+import routeFetchMiddleware from './route-fetch/middleware';
+import routeFetchUtils from './route-fetch/util';
 
 export {
   // High-level Redux API
@@ -53,5 +55,7 @@ export {
 
   // Middleware
   codeSplitMiddleware,
-  codeSplitUtils
+  codeSplitUtils,
+  routeFetchMiddleware,
+  routeFetchUtils
 };
