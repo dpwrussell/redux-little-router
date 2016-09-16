@@ -168,10 +168,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	      // Enhance the reducer
 	      var enhancedReducer = function enhancedReducer(state, action) {
-	        console.log('Executing enhancedReducer', state.router);
 	        var vanillaState = _extends({}, state);
 	        delete vanillaState.router;
 	        return _extends({}, reducer(vanillaState, action), {
+	          // router: routerReducer(state && state.router, action)
 	          router: (0, _reducer2.default)(state && state.router, action)
 	        });
 	      };
@@ -201,7 +201,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports.default = function (state, action) {
 	  if (action.type === _actionTypes.LOCATION_CHANGED || action.type === _actionTypes.LOCATION_INIT) {
-	    console.log('Actually executing inside the reducer itself!!!!');
 	    // TODO Determine a need for this
 	    // No-op the initial route action
 	    // if (state && state.pathname === action.payload.pathname) {
@@ -1910,10 +1909,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var payload = _extends({}, location, matchRoute(pathname));
 	  delete payload.routeComponents;
 	
-	  console.log('INIT', payload);
-	
 	  return {
-	    type: _actionTypes.LOCATION_CHANGED,
+	    type: _actionTypes.LOCATION_INIT,
 	    payload: payload
 	  };
 	};
@@ -3661,38 +3658,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _util = __webpack_require__(43);
 	
-	// // Middleware to trigger import of bundles require to instantitate the route
-	// const codeSplit = store => next => action => {
-	//
-	//   if (
-	//     action.type === LOCATION_CHANGED &&
-	//     action.payload &&
-	//     action.payload.routeComponents
-	//   ) {
-	//
-	//     // Get all the requirements for this route
-	//     const reqs = getReqs(store.dispatch, store.getState, action.payload);
-	//
-	//     // If there is bundled code to be loaded, replay the original action once
-	//     // it has been
-	//     if (reqs.length > 0) {
-	//       Promise.all(reqs).then(() =>
-	//         store.dispatch({
-	//           type: `ROUTER_${action.payload.action}`,
-	//           payload: action.payload.route
-	//         })
-	//       );
-	//       // Abort action
-	//       return null;
-	//     }
-	//   }
-	//
-	//   return next(action);
-	// };
-	//
-	// export default codeSplit;
-	
-	
 	// Middleware to trigger import of bundles require to instantitate the route
 	var codeSplitFactory = function codeSplitFactory(matchRoute) {
 	  return function (store) {
@@ -3700,10 +3665,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return function (action) {
 	
 	        if (action.type === _actionTypes.LOCATION_CHANGED && action.payload) {
-	          console.log('payload', action.payload);
 	          var pathname = action.payload.pathname;
 	          var match = matchRoute(pathname);
-	          console.log('Match', match, pathname);
 	          var routeComponents = match.routeComponents;
 	
 	          // Get all the requirements for this route
@@ -3791,22 +3754,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _actionTypes = __webpack_require__(3);
 	
 	var _util = __webpack_require__(45);
-	
-	// Middleware to trigger async actions based on the route that is currently being loaded.
-	// export const routeFetch = store => next => action => {
-	//
-	//   if (
-	//     action.type === LOCATION_CHANGED &&
-	//     action.payload &&
-	//     action.payload.routeComponents
-	//   ) {
-	//
-	//     // Get all the needs for this route
-	//     getNeeds(store.dispatch, store.getState, action.payload);
-	//   }
-	//
-	//   return next(action);
-	// };
 	
 	var routeFetchFactory = exports.routeFetchFactory = function routeFetchFactory(matchRoute) {
 	  return function (store) {

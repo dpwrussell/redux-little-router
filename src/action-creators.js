@@ -28,10 +28,8 @@ export const locationInit = ({ location, matchRoute }) => {
   };
   delete payload.routeComponents;
 
-  console.log('INIT', payload);
-
   return {
-    type: LOCATION_CHANGED,
+    type: LOCATION_INIT,
     payload
   };
 };

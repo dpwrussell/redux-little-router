@@ -4,11 +4,11 @@ const storeEnhancerFactory = (history, matchRoute) => createStore => (reducer, p
 
   // Enhance the reducer
   const enhancedReducer = (state, action) => {
-    console.log('Executing enhancedReducer', state.router);
     const vanillaState = {...state};
     delete vanillaState.router;
     return {
       ...reducer(vanillaState, action),
+      // router: routerReducer(state && state.router, action)
       router: routerReducer(state && state.router, action)
     };
   };
