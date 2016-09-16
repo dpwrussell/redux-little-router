@@ -8,7 +8,9 @@ import routerReducer from './reducer';
 import createComponentMatcher from './create-component-matcher';
 import { LOCATION_CHANGED, LOCATION_INIT, PUSH, REPLACE, GO, GO_FORWARD, GO_BACK } from './action-types';
 import { locationDidChange, locationInit } from './action-creators';
-import { makeRouter, assembleComponentRoute, assembleComponentRouteWithMeta, makeHistory } from './util';
+import { makeRouter, makeServerRouter,
+         assembleComponentRoute, assembleComponentRouteWithMeta,
+         makeHistory } from './util';
 import codeSplitMiddleware from './code-split/middleware';
 import codeSplitUtils from './code-split/util';
 
@@ -44,6 +46,7 @@ export {
 
   // Utilities
   makeRouter,
+  makeServerRouter,
   assembleComponentRoute,
   assembleComponentRouteWithMeta,
   makeHistory,
