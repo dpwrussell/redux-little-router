@@ -1,5 +1,6 @@
 // @flow
 import UrlPattern from 'url-pattern';
+import memoize from 'lru-memoize';
 
 export default (routes: Object) => {
   const routeList = Object.keys(routes).map(route => ({
@@ -8,7 +9,7 @@ export default (routes: Object) => {
     result: routes[route]
   }));
 
-  return (incomingUrl: string) => {
+  const fn = (incomingUrl: string) => {
     // Discard query strings
     const route = incomingUrl.split('?')[0];
 
@@ -29,4 +30,7 @@ export default (routes: Object) => {
 
     return null;
   };
+
+  return memoize()(fn);
+
 };
