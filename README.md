@@ -86,9 +86,17 @@ const {
 
 const clientOnlyStore = createStore(
   combineReducers({ router: reducer, yourReducer }),
+  // Or alternatively, if yourReducer is already the top-level reducers.
+  // (state, action) => {
+  //   return {
+  //     ...yourReducer(state, action),
+  //     router: routerReducer(state, action)
+  //   };
+  // },
   initialState,
   compose(enhancer, applyMiddleware(middleware))
 );
+
 ```
 
 Often, you'll want to update state or trigger side effects after loading the initial URL. To maintain compatibility with other store enhancers (particularly ones that handle side effects, like `redux-loop` or `redux-saga`), we require this optional initial dispatch to happen in client code by doing the following:
